@@ -982,13 +982,13 @@ class DrawingScene extends Phaser.Scene {
     }
     
     createButtons(width, height) {
-        // Ultra-bottom edge buttons for mobile - maximum space saving
-        const buttonHeight = this.isMobile ? 40 : 45;   // Even smaller on mobile
-        const buttonWidth = this.isMobile ? 90 : 90;    // Compact mobile buttons
-        const nextButtonWidth = this.isMobile ? 120 : 120;
-        const fontSize = this.isMobile ? '14px' : '16px';  // Smaller font on mobile
-        const buttonY = height - (this.isMobile ? 15 : 25);  // Even closer to edge on mobile
-        const sideButtonSpacing = this.isMobile ? 70 : 80;   // Closer to screen edges on mobile
+        // Larger buttons for better usability
+        const buttonHeight = this.isMobile ? 85 : 90;   // Increased height for easier tapping
+        const buttonWidth = this.isMobile ? 110 : 120;  // Increased width for better visibility
+        const nextButtonWidth = this.isMobile ? 180 : 200; // Larger next button
+        const fontSize = this.isMobile ? '28px' : '32px';  // Larger font for better readability
+        const buttonY = height - (this.isMobile ? 55 : 60);  // More space from edge for larger buttons
+        const sideButtonSpacing = this.isMobile ? 85 : 100;   // More spacing for larger buttons
         
         // Clear button - left bottom corner
         const clearButton = this.add.rectangle(sideButtonSpacing, buttonY, buttonWidth, buttonHeight, 0xff6b6b)
