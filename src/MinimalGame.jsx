@@ -177,8 +177,8 @@ class DrawingScene extends Phaser.Scene {
         // Ultra-compact text for mobile - minimal space usage, moved down slightly
         const pronunciationSize = this.isMobile ? '12px' : '24px';  // Smaller text on mobile
         const instructionSize = this.isMobile ? '10px' : '18px';     // Even smaller instructions
-        const pronunciationY = height/2 + (this.isMobile ? 85 : 110);  // Moved down a bit more
-        const instructionY = height/2 + (this.isMobile ? 97 : 150);    // Moved down with pronunciation
+        const pronunciationY = height/2 + (this.isMobile ? 185 : 210);  // Moved down a bit more
+        const instructionY = height/2 + (this.isMobile ? 197 : 250);    // Moved down with pronunciation
         
         // Letter pronunciation with sound button
         this.add.text(width/2, pronunciationY, `"${this.currentLetter.transliteration}" - ${this.currentLetter.pronunciation}`, {
