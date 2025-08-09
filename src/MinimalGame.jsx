@@ -16,7 +16,7 @@ class MinimalScene extends Phaser.Scene {
         this.add.rectangle(width/2, height/2, width, height, 0x4a90e2);
         
         // Title
-        this.add.text(width/2, 150, 'Tamil Aathichudi', {
+        this.add.text(width/2, 150, 'தமிழ் எழுத்துக்கள்)', {
             fontSize: '48px',
             fill: '#ffffff',
             fontFamily: 'Arial'
@@ -29,7 +29,7 @@ class MinimalScene extends Phaser.Scene {
         }).setOrigin(0.5);
         
         // Tamil letters
-        this.add.text(width/2, 280, 'அ ஆ இ ஈ உ ஊ', {
+        this.add.text(width/2, 280, 'உயிர் மற்றும் மெய் எழுத்துக்கள்', {
             fontSize: '48px',
             fill: '#ffffff',
             fontFamily: 'Arial'
