@@ -363,9 +363,7 @@ DIFFICULTY_LEVELS: {
 4. **Accessibility Testing**: Verify screen reader and motor accessibility
 5. **Educational Testing**: Validate learning effectiveness
 
-## 📄 License
 
-MIT License - See LICENSE file for details.
 
 ## 🙏 Acknowledgments
 

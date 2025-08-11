@@ -12,6 +12,9 @@ class MinimalScene extends Phaser.Scene {
         
         const { width, height } = this.sys.game.config;
         
+        // Add resize listener for responsive layout
+        this.scale.on('resize', this.handleResize, this);
+        
         // Background
         this.add.rectangle(width/2, height/2, width, height, 0x4a90e2);
         
@@ -59,6 +62,15 @@ class MinimalScene extends Phaser.Scene {
         startButton.on('pointerout', () => {
             startButton.setFillStyle(0x4caf50);
         });
+    }
+    
+    handleResize(gameSize) {
+        const { width, height } = gameSize;
+        console.log('🔄 MinimalScene resizing to:', width, 'x', height);
+        
+        // Clear and recreate all elements with new dimensions
+        this.children.removeAll();
+        this.create();
     }
 }
 
@@ -118,9 +130,12 @@ class DrawingScene extends Phaser.Scene {
         
         const { width, height } = this.sys.game.config;
         
-        // Mobile detection and optimization
-        this.isMobile = width <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        console.log('📱 Mobile device detected:', this.isMobile);
+        // Add resize listener for responsive layout
+        this.scale.on('resize', this.handleResize, this);
+        
+        // Consistent mobile detection with game config
+        this.isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        console.log('📱 Mobile device detected:', this.isMobile, 'Screen:', window.innerWidth, 'x', window.innerHeight, 'Game:', width, 'x', height);
         
         // Background
         this.add.rectangle(width/2, height/2, width, height, 0xf8f9fa);
@@ -128,10 +143,10 @@ class DrawingScene extends Phaser.Scene {
         // Current letter data
         this.currentLetter = this.tamilLetters[this.currentLetterIndex];
         
-        // Ultra-minimal top header for mobile - maximum space saving
-        const titleSize = this.isMobile ? '16px' : '20px';  // Smaller title on mobile
-        const progressSize = this.isMobile ? '12px' : '16px';  // Smaller progress text
-        const topY = this.isMobile ? 8 : 20;  // Even closer to top edge on mobile
+        // Responsive header sizing
+        const titleSize = this.isMobile ? '18px' : '24px';  // Appropriate sizes for each device
+        const progressSize = this.isMobile ? '14px' : '18px';  // Readable progress text
+        const topY = this.isMobile ? 15 : 30;  // Proper spacing from top
         
         // Title at the very top - no background rectangle
         this.add.text(width/2, topY, 'Trace the Tamil Letter', {
@@ -149,63 +164,33 @@ class DrawingScene extends Phaser.Scene {
             fontFamily: 'Arial'
         }).setOrigin(0.5);
         
-        // MAXIMUM letter sizing for mobile - use every pixel
-        const letterSize = this.isMobile ? '600px' : '320px';  // MASSIVE 420px on mobile!
+        // Responsive letter sizing that takes advantage of available space
+        const letterSize = this.isMobile ? '500px' : '400px';  // Larger desktop size to fill space better
         const strokeThickness = this.isMobile ? 6 : 6;  // Same thick stroke for both
-        const letterYOffset = this.isMobile ? -50 : -40;  // Move up even more on mobile
+        const letterYOffset = this.isMobile ? -100 : -100;  // Moved much higher to ensure full letter visibility
         
-        // Letter outline (black stroke, no fill) - RESPONSIVE TEXT
+        // Letter outline (black stroke, no fill) - RESPONSIVE TEXT with adjusted origin
         this.letterText = this.add.text(width/2, height/2 + letterYOffset, this.currentLetter.letter, {
             fontSize: letterSize,
             fontFamily: 'Arial',
             stroke: '#000000',
             strokeThickness: strokeThickness,
-            fill: 'transparent'  // No fill color
-        }).setOrigin(0.5);
+            fill: 'transparent',  // No fill color
+            align: 'center',
+            baseline: 'middle'
+        }).setOrigin(0.5, 0.4);  // Adjusted Y origin to account for Tamil letter descenders
         
-        // Add dotted guide lines inside the letter for better tracing guidance
-        this.createLetterGuideLines();
+        // Guide lines removed for cleaner letter display
         
-        // Initialize Tamil voices and play the letter sound when entering new letter
-        this.initializeTamilVoices();
+        // Audio system disabled per user request
         
-        // Delay sound to allow voices to load, with multiple attempts
-        this.time.delayedCall(200, () => {
-            this.playLetterSound();
-        });
+        // Responsive bottom text positioning
+        const pronunciationSize = this.isMobile ? '16px' : '20px';  // Readable sizes
+        const instructionSize = this.isMobile ? '14px' : '16px';    // Clear instructions
+        const pronunciationY = height/2 + (this.isMobile ? 200 : 150);  // Proportional positioning
+        const instructionY = height/2 + (this.isMobile ? 220 : 180);    // Proper spacing
         
-        // Ultra-compact text for mobile - minimal space usage, moved down slightly
-        const pronunciationSize = this.isMobile ? '12px' : '24px';  // Smaller text on mobile
-        const instructionSize = this.isMobile ? '10px' : '18px';     // Even smaller instructions
-        const pronunciationY = height/2 + (this.isMobile ? 185 : 210);  // Moved down a bit more
-        const instructionY = height/2 + (this.isMobile ? 197 : 250);    // Moved down with pronunciation
-        
-        // Letter pronunciation with sound button
-        this.add.text(width/2, pronunciationY, `"${this.currentLetter.transliteration}" - ${this.currentLetter.pronunciation}`, {
-            fontSize: pronunciationSize,
-            fill: '#666666',
-            fontFamily: 'Arial',
-            fontStyle: 'italic'
-        }).setOrigin(0.5);
-        
-        // Sound button to replay pronunciation
-        const soundButton = this.add.text(width/2 + (this.isMobile ? 120 : 150), pronunciationY, '🔊', {
-            fontSize: this.isMobile ? '20px' : '24px'
-        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-        
-        soundButton.on('pointerdown', () => {
-            console.log('🔊 Manual sound button pressed');
-            this.playLetterSound();
-            
-            // Visual feedback
-            this.tweens.add({
-                targets: soundButton,
-                scaleX: 1.2,
-                scaleY: 1.2,
-                duration: 150,
-                yoyo: true
-            });
-        });
+        // Letter pronunciation and sound button hidden per user request
         
         // Removed test buttons - will use custom voice files
         
@@ -214,12 +199,7 @@ class DrawingScene extends Phaser.Scene {
         this.isDrawing = false;
         this.drawingPoints = [];
         
-        // Instructions
-        this.add.text(width/2, instructionY, 'Trace inside the letter outline', {
-            fontSize: instructionSize,
-            fill: '#888888',
-            fontFamily: 'Arial'
-        }).setOrigin(0.5);
+        // Instructions hidden per user request
         
         // Setup drawing with bounds checking
         this.setupRestrictedDrawing();
@@ -634,8 +614,8 @@ class DrawingScene extends Phaser.Scene {
     isInsideLetterBounds(x, y) {
         // Get letter bounds (approximate)
         const letterBounds = this.letterText.getBounds();
-        // More generous margin for mobile devices with much larger letters
-        const margin = this.isMobile ? 40 : 20;  // Even more margin for 350px mobile letters 
+        // Much larger playable area for easier tracing
+        const margin = this.isMobile ? 80 : 60;  // Significantly increased playable area 
         
         return (
             x >= letterBounds.x - margin &&
@@ -968,11 +948,24 @@ class DrawingScene extends Phaser.Scene {
             this.nextButton.setVisible(true);
             this.nextButtonText.setVisible(true);
             
+            // Add hover effects for Next button
+            const { width, height } = this.sys.game.config;
+            const nextButtonWidth = this.isMobile ? 180 : 200;
+            const buttonHeight = this.isMobile ? 85 : 90;
+            const buttonY = height - (this.isMobile ? 55 : 60);
+            
+            this.nextButton.on('pointerover', () => {
+                this.nextButton.clear().fillStyle(0x00f2c3).fillRoundedRect(width/2 - nextButtonWidth/2, buttonY - buttonHeight/2, nextButtonWidth, buttonHeight, 15);
+            });
+            this.nextButton.on('pointerout', () => {
+                this.nextButton.clear().fillStyle(0x00d4aa).fillRoundedRect(width/2 - nextButtonWidth/2, buttonY - buttonHeight/2, nextButtonWidth, buttonHeight, 15);
+            });
+            
             // Add glow effect to indicate it's ready
             this.tweens.add({
                 targets: this.nextButton,
-                scaleX: 1.1,
-                scaleY: 1.1,
+                scaleX: 1.05,
+                scaleY: 1.05,
                 duration: 500,
                 yoyo: true,
                 repeat: 2,
@@ -990,39 +983,53 @@ class DrawingScene extends Phaser.Scene {
         const buttonY = height - (this.isMobile ? 55 : 60);  // More space from edge for larger buttons
         const sideButtonSpacing = this.isMobile ? 85 : 100;   // More spacing for larger buttons
         
-        // Clear button - left bottom corner
-        const clearButton = this.add.rectangle(sideButtonSpacing, buttonY, buttonWidth, buttonHeight, 0xff6b6b)
-            .setInteractive({ useHandCursor: true });
+        // Clear button - left bottom corner with rounded corners
+        const clearButton = this.add.graphics()
+            .fillStyle(0xffd93d)  // Bright yellow color
+            .fillRoundedRect(sideButtonSpacing - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 15)
+            .setInteractive(new Phaser.Geom.Rectangle(sideButtonSpacing - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight), Phaser.Geom.Rectangle.Contains);
         
         this.add.text(sideButtonSpacing, buttonY, 'Clear', {
             fontSize: fontSize,
-            fill: '#ffffff',
+            fill: '#333333',  // Dark text on bright background
             fontFamily: 'Arial',
             fontStyle: 'bold'
         }).setOrigin(0.5);
         
-        // Next button (initially hidden) - center bottom
-        this.nextButton = this.add.rectangle(width/2, buttonY, nextButtonWidth, buttonHeight, 0x4caf50)
-            .setInteractive({ useHandCursor: true })
+        // Next button (initially hidden) - center bottom with rounded corners
+        this.nextButton = this.add.graphics()
+            .fillStyle(0x00d4aa)  // Bright teal/mint green
+            .fillRoundedRect(width/2 - nextButtonWidth/2, buttonY - buttonHeight/2, nextButtonWidth, buttonHeight, 15)
+            .setInteractive(new Phaser.Geom.Rectangle(width/2 - nextButtonWidth/2, buttonY - buttonHeight/2, nextButtonWidth, buttonHeight), Phaser.Geom.Rectangle.Contains)
             .setVisible(false);
         
         this.nextButtonText = this.add.text(width/2, buttonY, 'Next Letter', {
             fontSize: fontSize,
-            fill: '#ffffff',
+            fill: '#ffffff',  // White text on teal background
             fontFamily: 'Arial',
             fontStyle: 'bold'
         }).setOrigin(0.5).setVisible(false);
         
-        // Menu button - right bottom corner
-        const menuButton = this.add.rectangle(width - sideButtonSpacing, buttonY, buttonWidth, buttonHeight, 0x2196f3)
-            .setInteractive({ useHandCursor: true });
+        // Menu button - right bottom corner with rounded corners
+        const menuButton = this.add.graphics()
+            .fillStyle(0xff6b9d)  // Bright pink/magenta
+            .fillRoundedRect(width - sideButtonSpacing - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 15)
+            .setInteractive(new Phaser.Geom.Rectangle(width - sideButtonSpacing - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight), Phaser.Geom.Rectangle.Contains);
         
         this.add.text(width - sideButtonSpacing, buttonY, 'Menu', {
             fontSize: fontSize,
-            fill: '#ffffff',
+            fill: '#ffffff',  // White text on pink background
             fontFamily: 'Arial',
             fontStyle: 'bold'
         }).setOrigin(0.5);
+        
+        // Button hover effects for Clear button
+        clearButton.on('pointerover', () => {
+            clearButton.clear().fillStyle(0xffed4a).fillRoundedRect(sideButtonSpacing - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 15);
+        });
+        clearButton.on('pointerout', () => {
+            clearButton.clear().fillStyle(0xffd93d).fillRoundedRect(sideButtonSpacing - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 15);
+        });
         
         // Button events
         clearButton.on('pointerdown', () => {
@@ -1030,11 +1037,7 @@ class DrawingScene extends Phaser.Scene {
             this.drawingGraphics.clear();
             this.drawingPoints = [];
             
-            // Recreate guide lines after clearing
-            if (this.guideGraphics) {
-                this.guideGraphics.clear();
-            }
-            this.createLetterGuideLines();
+            // No guide lines to recreate
             
             // Hide next button until tracing is complete again
             this.nextButton.setVisible(false);
@@ -1060,6 +1063,14 @@ class DrawingScene extends Phaser.Scene {
         this.nextButton.on('pointerdown', () => {
             console.log('➡️ Next letter');
             this.goToNextLetter();
+        });
+        
+        // Button hover effects for Menu button
+        menuButton.on('pointerover', () => {
+            menuButton.clear().fillStyle(0xff85b3).fillRoundedRect(width - sideButtonSpacing - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 15);
+        });
+        menuButton.on('pointerout', () => {
+            menuButton.clear().fillStyle(0xff6b9d).fillRoundedRect(width - sideButtonSpacing - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 15);
         });
         
         menuButton.on('pointerdown', () => {
@@ -1127,55 +1138,113 @@ class DrawingScene extends Phaser.Scene {
             this.scene.start('MinimalScene');
         });
     }
+    
+    handleResize(gameSize) {
+        const { width, height } = gameSize;
+        console.log('🔄 DrawingScene resizing to:', width, 'x', height);
+        
+        // Store current state
+        const currentLetterIndex = this.currentLetterIndex;
+        const drawingPoints = this.drawingPoints ? [...this.drawingPoints] : [];
+        const isEvaluating = this.isEvaluating;
+        
+        // Clear and recreate all elements with new dimensions
+        this.children.removeAll();
+        
+        // Reinitialize with current state
+        this.currentLetterIndex = currentLetterIndex;
+        this.drawingPoints = drawingPoints;
+        this.isEvaluating = isEvaluating;
+        
+        this.create();
+    }
 }
 
-// Responsive game configuration
-const gameConfig = {
-    type: Phaser.AUTO,
-    width: 1024,
-    height: 768,
-    backgroundColor: '#f8f9fa',
-    parent: 'minimal-game',
-    scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        min: {
-            width: 320,
-            height: 240
+// Smart responsive game configuration that fills available space properly
+const getGameConfig = () => {
+    const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Use full viewport for mobile, much larger size for desktop to fill available space
+    const gameWidth = isMobile ? window.innerWidth : Math.min(window.innerWidth * 0.95, 1400);
+    const gameHeight = isMobile ? window.innerHeight : Math.min(window.innerHeight * 0.95, 900);
+    
+    return {
+        type: Phaser.AUTO,
+        width: gameWidth,
+        height: gameHeight,
+        backgroundColor: '#f8f9fa',
+        parent: 'minimal-game',
+        scale: {
+            mode: isMobile ? Phaser.Scale.RESIZE : Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+            min: {
+                width: 320,
+                height: 240
+            },
+            max: {
+                width: isMobile ? window.innerWidth : 1400,
+                height: isMobile ? window.innerHeight : 900
+            }
         },
-        max: {
-            width: 1024,
-            height: 768
-        }
-    },
-    input: {
-        activePointers: 3,
-        smoothFactor: 0.2
-    },
-    scene: [MinimalScene, DrawingScene]
+        input: {
+            activePointers: 3,
+            smoothFactor: 0.2
+        },
+        scene: [MinimalScene, DrawingScene]
+    };
 };
 
 export default function MinimalGame() {
     const gameRef = useRef();
     
     useEffect(() => {
-        console.log('🎮 Initializing minimal Phaser game...');
+        console.log('🎮 Initializing fully responsive Phaser game...');
         
         try {
+            const gameConfig = getGameConfig();
             const game = new Phaser.Game(gameConfig);
             gameRef.current = game;
             
-            console.log('✅ Minimal game created successfully');
+            console.log('✅ Responsive game created successfully');
+            
+            // Handle window resize and orientation changes
+            const handleResize = () => {
+                console.log('📱 Device resized/rotated - updating game dimensions');
+                if (gameRef.current && gameRef.current.scale) {
+                    // Update game size to match new viewport dimensions
+                    gameRef.current.scale.resize(window.innerWidth, window.innerHeight);
+                }
+            };
+            
+            const handleOrientationChange = () => {
+                // Small delay to allow orientation change to complete
+                setTimeout(() => {
+                    console.log('🔄 Orientation changed - updating game layout');
+                    handleResize();
+                }, 100);
+            };
+            
+            // Add event listeners for responsiveness
+            window.addEventListener('resize', handleResize);
+            window.addEventListener('orientationchange', handleOrientationChange);
+            
+            // Also listen for viewport changes (mobile browsers)
+            window.addEventListener('load', handleResize);
             
             return () => {
+                // Cleanup event listeners
+                window.removeEventListener('resize', handleResize);
+                window.removeEventListener('orientationchange', handleOrientationChange);
+                window.removeEventListener('load', handleResize);
+                
                 if (gameRef.current) {
-                    console.log('🧹 Cleaning up game');
+                    console.log('🧹 Cleaning up responsive game');
                     gameRef.current.destroy(true);
                     gameRef.current = null;
                 }
             };
         } catch (error) {
-            console.error('❌ Error creating Phaser game:', error);
+            console.error('❌ Error creating responsive Phaser game:', error);
         }
     }, []);
     
@@ -1195,12 +1264,13 @@ export default function MinimalGame() {
             <div id="minimal-game" style={{
                 width: '100%',
                 height: '100%',
-                maxWidth: window.innerWidth <= 768 ? '100vw' : '1024px',
-                maxHeight: window.innerWidth <= 768 ? '100vh' : '768px',
                 backgroundColor: '#f8f9fa',
                 borderRadius: window.innerWidth <= 768 ? '0' : '10px',
                 overflow: 'hidden',
-                touchAction: 'manipulation'
+                touchAction: 'manipulation',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
             }}></div>
         </div>
     );
