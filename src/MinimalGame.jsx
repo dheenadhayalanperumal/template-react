@@ -19,49 +19,111 @@ class MinimalScene extends Phaser.Scene {
         this.add.rectangle(width/2, height/2, width, height, 0x4a90e2);
         
         // Title
-        this.add.text(width/2, 150, 'தமிழ் எழுத்துக்கள்)', {
+        this.add.text(width/2, 150, 'தமிழ் எழுத்துக்கள்', {
             fontSize: '48px',
             fill: '#ffffff',
             fontFamily: 'Arial'
         }).setOrigin(0.5);
         
-        this.add.text(width/2, 200, 'Draw & Learn', {
+        this.add.text(width/2, 220, 'Draw & Learn', {
             fontSize: '32px',
             fill: '#ffeb3b',
             fontFamily: 'Arial'
         }).setOrigin(0.5);
         
         // Tamil letters
-        this.add.text(width/2, 280, 'உயிர் மற்றும் மெய் எழுத்துக்கள்', {
-            fontSize: '48px',
-            fill: '#ffffff',
-            fontFamily: 'Arial'
-        }).setOrigin(0.5);
+        // this.add.text(width/2, 280, 'உயிர் மற்றும் மெய் எழுத்துக்கள்', {
+        //     fontSize: '48px',
+        //     fill: '#ffffff',
+        //     fontFamily: 'Arial'
+        // }).setOrigin(0.5);
         
-        // Interactive start button
-        const startButton = this.add.rectangle(width/2, height/2 + 50, 250, 70, 0x4caf50)
+        // Letter type selection buttons - 4 options in 2x2 grid with proper spacing
+        const buttonWidth = 240;
+        const buttonHeight = 65;
+        const buttonSpacingX = 130;
+        const buttonSpacingY = 75;
+        const buttonStartY = height/2 + 30; // Move buttons down to avoid title overlap
+        
+        // Tamil Uyir Eluthu button (top-left)
+        const uyirButton = this.add.rectangle(width/2 - buttonSpacingX, buttonStartY - buttonSpacingY, buttonWidth, buttonHeight, 0x4caf50)
             .setInteractive({ useHandCursor: true });
         
-        this.add.text(width/2, height/2 + 50, 'START LEARNING', {
-            fontSize: '24px',
+        this.add.text(width/2 - buttonSpacingX, buttonStartY - buttonSpacingY, 'உயிர் எழுத்து\n(Tamil Vowels)', {
+            fontSize: '15px',
             fill: '#ffffff',
             fontFamily: 'Arial',
-            fontStyle: 'bold'
+            fontStyle: 'bold',
+            align: 'center'
         }).setOrigin(0.5);
         
-        // Button interactions
-        startButton.on('pointerdown', () => {
-            console.log('🚀 START LEARNING clicked - starting with first Tamil letter');
-            this.scene.start('DrawingScene', { letterIndex: 0 });
-        });
+        // Tamil Uyir Mei Eluthu button (top-right)
+        const uyirMeiButton = this.add.rectangle(width/2 + buttonSpacingX, buttonStartY - buttonSpacingY, buttonWidth, buttonHeight, 0x2196f3)
+            .setInteractive({ useHandCursor: true });
         
-        startButton.on('pointerover', () => {
-            startButton.setFillStyle(0x45a049);
-        });
+        this.add.text(width/2 + buttonSpacingX, buttonStartY - buttonSpacingY, 'உயிர்மெய் எழுத்து\n(ka, ga, sa...)', {
+            fontSize: '15px',
+            fill: '#ffffff',
+            fontFamily: 'Arial',
+            fontStyle: 'bold',
+            align: 'center'
+        }).setOrigin(0.5);
         
-        startButton.on('pointerout', () => {
-            startButton.setFillStyle(0x4caf50);
+        // English Capital Letters button (bottom-left)
+        const englishCapitalButton = this.add.rectangle(width/2 - buttonSpacingX, buttonStartY + buttonSpacingY, buttonWidth, buttonHeight, 0xff9800)
+            .setInteractive({ useHandCursor: true });
+        
+        this.add.text(width/2 - buttonSpacingX, buttonStartY + buttonSpacingY, 'English Capital\n(A, B, C...)', {
+            fontSize: '15px',
+            fill: '#ffffff',
+            fontFamily: 'Arial',
+            fontStyle: 'bold',
+            align: 'center'
+        }).setOrigin(0.5);
+        
+        // English Small Letters button (bottom-right)
+        const englishSmallButton = this.add.rectangle(width/2 + buttonSpacingX, buttonStartY + buttonSpacingY, buttonWidth, buttonHeight, 0x9c27b0)
+            .setInteractive({ useHandCursor: true });
+        
+        this.add.text(width/2 + buttonSpacingX, buttonStartY + buttonSpacingY, 'English Small\n(a, b, c...)', {
+            fontSize: '15px',
+            fill: '#ffffff',
+            fontFamily: 'Arial',
+            fontStyle: 'bold',
+            align: 'center'
+        }).setOrigin(0.5);
+        
+        // Button interactions for Tamil Uyir
+        uyirButton.on('pointerdown', () => {
+            console.log('🚀 Tamil Uyir Eluthu selected - starting with vowels');
+            this.scene.start('DrawingScene', { letterIndex: 0, letterType: 'uyir' });
         });
+        uyirButton.on('pointerover', () => uyirButton.setFillStyle(0x45a049));
+        uyirButton.on('pointerout', () => uyirButton.setFillStyle(0x4caf50));
+        
+        // Button interactions for Tamil Uyir Mei
+        uyirMeiButton.on('pointerdown', () => {
+            console.log('🚀 Tamil Uyir Mei Eluthu selected - starting with consonant combinations');
+            this.scene.start('DrawingScene', { letterIndex: 0, letterType: 'uyirMei' });
+        });
+        uyirMeiButton.on('pointerover', () => uyirMeiButton.setFillStyle(0x1976d2));
+        uyirMeiButton.on('pointerout', () => uyirMeiButton.setFillStyle(0x2196f3));
+        
+        // Button interactions for English Capital
+        englishCapitalButton.on('pointerdown', () => {
+            console.log('🚀 English Capital Letters selected - starting with A-Z');
+            this.scene.start('DrawingScene', { letterIndex: 0, letterType: 'englishCapital' });
+        });
+        englishCapitalButton.on('pointerover', () => englishCapitalButton.setFillStyle(0xfb8c00));
+        englishCapitalButton.on('pointerout', () => englishCapitalButton.setFillStyle(0xff9800));
+        
+        // Button interactions for English Small
+        englishSmallButton.on('pointerdown', () => {
+            console.log('🚀 English Small Letters selected - starting with a-z');
+            this.scene.start('DrawingScene', { letterIndex: 0, letterType: 'englishSmall' });
+        });
+        englishSmallButton.on('pointerover', () => englishSmallButton.setFillStyle(0x7b1fa2));
+        englishSmallButton.on('pointerout', () => englishSmallButton.setFillStyle(0x9c27b0));
     }
     
     handleResize(gameSize) {
@@ -83,13 +145,13 @@ class DrawingScene extends Phaser.Scene {
     init(data) {
         // Initialize with letter data
         this.currentLetterIndex = data.letterIndex || 0;
+        this.letterType = data.letterType || 'uyir'; // Default to uyir
         this.initializeTamilLetters();
     }
     
     initializeTamilLetters() {
-        // All Tamil letters with phonetic pronunciations for speech synthesis
-        this.tamilLetters = [
-            // Uyir Ezhuthukkal (Vowels) - Phonetic sounds that work with TTS
+        // Uyir Ezhuthukkal (Vowels) - 12 vowels
+        this.uyirLetters = [
             { letter: 'அ', transliteration: 'ah', pronunciation: 'அ', nativeSound: 'அ' },
             { letter: 'ஆ', transliteration: 'aah', pronunciation: 'ஆ', nativeSound: 'ஆ' },
             { letter: 'இ', transliteration: 'ih', pronunciation: 'இ', nativeSound: 'இ' },
@@ -101,28 +163,101 @@ class DrawingScene extends Phaser.Scene {
             { letter: 'ஐ', transliteration: 'aai', pronunciation: 'ஐ', nativeSound: 'ஐ' },
             { letter: 'ஒ', transliteration: 'oh', pronunciation: 'ஒ', nativeSound: 'ஒ' },
             { letter: 'ஓ', transliteration: 'ohh', pronunciation: 'ஓ', nativeSound: 'ஓ' },
-            { letter: 'ஔ', transliteration: 'oww', pronunciation: 'ஔ', nativeSound: 'ஔ' },
-            
-            // Mei Ezhuthukkal (Consonants) - Phonetic sounds for TTS
-            { letter: 'க்', transliteration: 'kuh', pronunciation: 'க்', nativeSound: 'க்' },
-            { letter: 'ங்', transliteration: 'nguh', pronunciation: 'ங்', nativeSound: 'ங்' },
-            { letter: 'ச்', transliteration: 'chuh', pronunciation: 'ச்', nativeSound: 'ச்' },
-            { letter: 'ஞ்', transliteration: 'nyuh', pronunciation: 'ஞ்', nativeSound: 'ஞ்' },
-            { letter: 'ட்', transliteration: 'tuh', pronunciation: 'ட்', nativeSound: 'ட்' },
-            { letter: 'ண்', transliteration: 'nuh', pronunciation: 'ண்', nativeSound: 'ண்' },
-            { letter: 'த்', transliteration: 'thuh', pronunciation: 'த்', nativeSound: 'த்' },
-            { letter: 'ந்', transliteration: 'nuh', pronunciation: 'ந்', nativeSound: 'ந்' },
-            { letter: 'ப்', transliteration: 'puh', pronunciation: 'ப்', nativeSound: 'ப்' },
-            { letter: 'ம்', transliteration: 'muh', pronunciation: 'ம்', nativeSound: 'ம்' },
-            { letter: 'ய்', transliteration: 'yuh', pronunciation: 'ய்', nativeSound: 'ய்' },
-            { letter: 'ர்', transliteration: 'ruh', pronunciation: 'ர்', nativeSound: 'ர்' },
-            { letter: 'ல்', transliteration: 'luh', pronunciation: 'ல்', nativeSound: 'ல்' },
-            { letter: 'வ்', transliteration: 'vuh', pronunciation: 'வ்', nativeSound: 'வ்' },
-            { letter: 'ழ்', transliteration: 'zhuh', pronunciation: 'ழ்', nativeSound: 'ழ்' },
-            { letter: 'ள்', transliteration: 'luh', pronunciation: 'ள்', nativeSound: 'ள்' },
-            { letter: 'ற்', transliteration: 'ruh', pronunciation: 'ற்', nativeSound: 'ற்' },
-            { letter: 'ன்', transliteration: 'nuh', pronunciation: 'ன்', nativeSound: 'ன்' }
+            { letter: 'ஔ', transliteration: 'oww', pronunciation: 'ஔ', nativeSound: 'ஔ' }
         ];
+        
+        // Uyir Mei Ezhuthukkal (18 Tamil Consonants)
+        this.uyirMeiLetters = [
+            { letter: 'க', transliteration: 'ka', pronunciation: 'க', nativeSound: 'க' },
+            { letter: 'ங', transliteration: 'nga', pronunciation: 'ங', nativeSound: 'ங' },
+            { letter: 'ச', transliteration: 'cha', pronunciation: 'ச', nativeSound: 'ச' },
+            { letter: 'ஞ', transliteration: 'nya', pronunciation: 'ஞ', nativeSound: 'ஞ' },
+            { letter: 'ட', transliteration: 'ta', pronunciation: 'ட', nativeSound: 'ட' },
+            { letter: 'ண', transliteration: 'na', pronunciation: 'ண', nativeSound: 'ண' },
+            { letter: 'த', transliteration: 'tha', pronunciation: 'த', nativeSound: 'த' },
+            { letter: 'ந', transliteration: 'nha', pronunciation: 'ந', nativeSound: 'ந' },
+            { letter: 'ப', transliteration: 'pa', pronunciation: 'ப', nativeSound: 'ப' },
+            { letter: 'ம', transliteration: 'ma', pronunciation: 'ம', nativeSound: 'ம' },
+            { letter: 'ய', transliteration: 'ya', pronunciation: 'ய', nativeSound: 'ய' },
+            { letter: 'ர', transliteration: 'ra', pronunciation: 'ர', nativeSound: 'ர' },
+            { letter: 'ல', transliteration: 'la', pronunciation: 'ல', nativeSound: 'ல' },
+            { letter: 'வ', transliteration: 'va', pronunciation: 'வ', nativeSound: 'வ' },
+            { letter: 'ழ', transliteration: 'zha', pronunciation: 'ழ', nativeSound: 'ழ' },
+            { letter: 'ள', transliteration: 'lla', pronunciation: 'ள', nativeSound: 'ள' },
+            { letter: 'ற', transliteration: 'rra', pronunciation: 'ற', nativeSound: 'ற' },
+            { letter: 'ன', transliteration: 'nna', pronunciation: 'ன', nativeSound: 'ன' }
+        ];
+        
+        // English Capital Letters (A-Z)
+        this.englishCapitalLetters = [
+            { letter: 'A', transliteration: 'A', pronunciation: 'A', nativeSound: 'A' },
+            { letter: 'B', transliteration: 'B', pronunciation: 'B', nativeSound: 'B' },
+            { letter: 'C', transliteration: 'C', pronunciation: 'C', nativeSound: 'C' },
+            { letter: 'D', transliteration: 'D', pronunciation: 'D', nativeSound: 'D' },
+            { letter: 'E', transliteration: 'E', pronunciation: 'E', nativeSound: 'E' },
+            { letter: 'F', transliteration: 'F', pronunciation: 'F', nativeSound: 'F' },
+            { letter: 'G', transliteration: 'G', pronunciation: 'G', nativeSound: 'G' },
+            { letter: 'H', transliteration: 'H', pronunciation: 'H', nativeSound: 'H' },
+            { letter: 'I', transliteration: 'I', pronunciation: 'I', nativeSound: 'I' },
+            { letter: 'J', transliteration: 'J', pronunciation: 'J', nativeSound: 'J' },
+            { letter: 'K', transliteration: 'K', pronunciation: 'K', nativeSound: 'K' },
+            { letter: 'L', transliteration: 'L', pronunciation: 'L', nativeSound: 'L' },
+            { letter: 'M', transliteration: 'M', pronunciation: 'M', nativeSound: 'M' },
+            { letter: 'N', transliteration: 'N', pronunciation: 'N', nativeSound: 'N' },
+            { letter: 'O', transliteration: 'O', pronunciation: 'O', nativeSound: 'O' },
+            { letter: 'P', transliteration: 'P', pronunciation: 'P', nativeSound: 'P' },
+            { letter: 'Q', transliteration: 'Q', pronunciation: 'Q', nativeSound: 'Q' },
+            { letter: 'R', transliteration: 'R', pronunciation: 'R', nativeSound: 'R' },
+            { letter: 'S', transliteration: 'S', pronunciation: 'S', nativeSound: 'S' },
+            { letter: 'T', transliteration: 'T', pronunciation: 'T', nativeSound: 'T' },
+            { letter: 'U', transliteration: 'U', pronunciation: 'U', nativeSound: 'U' },
+            { letter: 'V', transliteration: 'V', pronunciation: 'V', nativeSound: 'V' },
+            { letter: 'W', transliteration: 'W', pronunciation: 'W', nativeSound: 'W' },
+            { letter: 'X', transliteration: 'X', pronunciation: 'X', nativeSound: 'X' },
+            { letter: 'Y', transliteration: 'Y', pronunciation: 'Y', nativeSound: 'Y' },
+            { letter: 'Z', transliteration: 'Z', pronunciation: 'Z', nativeSound: 'Z' }
+        ];
+        
+        // English Small Letters (a-z)
+        this.englishSmallLetters = [
+            { letter: 'a', transliteration: 'a', pronunciation: 'a', nativeSound: 'a' },
+            { letter: 'b', transliteration: 'b', pronunciation: 'b', nativeSound: 'b' },
+            { letter: 'c', transliteration: 'c', pronunciation: 'c', nativeSound: 'c' },
+            { letter: 'd', transliteration: 'd', pronunciation: 'd', nativeSound: 'd' },
+            { letter: 'e', transliteration: 'e', pronunciation: 'e', nativeSound: 'e' },
+            { letter: 'f', transliteration: 'f', pronunciation: 'f', nativeSound: 'f' },
+            { letter: 'g', transliteration: 'g', pronunciation: 'g', nativeSound: 'g' },
+            { letter: 'h', transliteration: 'h', pronunciation: 'h', nativeSound: 'h' },
+            { letter: 'i', transliteration: 'i', pronunciation: 'i', nativeSound: 'i' },
+            { letter: 'j', transliteration: 'j', pronunciation: 'j', nativeSound: 'j' },
+            { letter: 'k', transliteration: 'k', pronunciation: 'k', nativeSound: 'k' },
+            { letter: 'l', transliteration: 'l', pronunciation: 'l', nativeSound: 'l' },
+            { letter: 'm', transliteration: 'm', pronunciation: 'm', nativeSound: 'm' },
+            { letter: 'n', transliteration: 'n', pronunciation: 'n', nativeSound: 'n' },
+            { letter: 'o', transliteration: 'o', pronunciation: 'o', nativeSound: 'o' },
+            { letter: 'p', transliteration: 'p', pronunciation: 'p', nativeSound: 'p' },
+            { letter: 'q', transliteration: 'q', pronunciation: 'q', nativeSound: 'q' },
+            { letter: 'r', transliteration: 'r', pronunciation: 'r', nativeSound: 'r' },
+            { letter: 's', transliteration: 's', pronunciation: 's', nativeSound: 's' },
+            { letter: 't', transliteration: 't', pronunciation: 't', nativeSound: 't' },
+            { letter: 'u', transliteration: 'u', pronunciation: 'u', nativeSound: 'u' },
+            { letter: 'v', transliteration: 'v', pronunciation: 'v', nativeSound: 'v' },
+            { letter: 'w', transliteration: 'w', pronunciation: 'w', nativeSound: 'w' },
+            { letter: 'x', transliteration: 'x', pronunciation: 'x', nativeSound: 'x' },
+            { letter: 'y', transliteration: 'y', pronunciation: 'y', nativeSound: 'y' },
+            { letter: 'z', transliteration: 'z', pronunciation: 'z', nativeSound: 'z' }
+        ];
+        
+        // Set the appropriate letter array based on selection
+        if (this.letterType === 'uyir') {
+            this.tamilLetters = this.uyirLetters;
+        } else if (this.letterType === 'uyirMei') {
+            this.tamilLetters = this.uyirMeiLetters;
+        } else if (this.letterType === 'englishCapital') {
+            this.tamilLetters = this.englishCapitalLetters;
+        } else if (this.letterType === 'englishSmall') {
+            this.tamilLetters = this.englishSmallLetters;
+        }
     }
     
     create() {
@@ -148,8 +283,14 @@ class DrawingScene extends Phaser.Scene {
         const progressSize = this.isMobile ? '14px' : '18px';  // Readable progress text
         const topY = this.isMobile ? 15 : 30;  // Proper spacing from top
         
-        // Title at the very top - no background rectangle
-        this.add.text(width/2, topY, 'Trace the Tamil Letter', {
+        // Title based on letter type
+        let titleText = 'Trace the Letter';
+        if (this.letterType === 'uyir') titleText = 'Trace the Tamil Vowel';
+        else if (this.letterType === 'uyirMei') titleText = 'Trace the Tamil Letter';
+        else if (this.letterType === 'englishCapital') titleText = 'Trace the Capital Letter';
+        else if (this.letterType === 'englishSmall') titleText = 'Trace the Small Letter';
+        
+        this.add.text(width/2, topY, titleText, {
             fontSize: titleSize,
             fill: '#4a90e2',  // Blue text instead of white background
             fontFamily: 'Arial',
@@ -158,7 +299,13 @@ class DrawingScene extends Phaser.Scene {
         
         // Progress indicator right below title - tighter spacing on mobile
         const progressSpacing = this.isMobile ? 18 : 25;  // Tighter spacing on mobile
-        this.add.text(width/2, topY + progressSpacing, `Letter ${this.currentLetterIndex + 1} of ${this.tamilLetters.length}`, {
+        let letterTypeText = 'Letter';
+        if (this.letterType === 'uyir') letterTypeText = 'Vowel';
+        else if (this.letterType === 'uyirMei') letterTypeText = 'Letter';
+        else if (this.letterType === 'englishCapital') letterTypeText = 'Capital';
+        else if (this.letterType === 'englishSmall') letterTypeText = 'Letter';
+        
+        this.add.text(width/2, topY + progressSpacing, `${letterTypeText} ${this.currentLetterIndex + 1} of ${this.tamilLetters.length}`, {
             fontSize: progressSize,
             fill: '#666666',
             fontFamily: 'Arial'
@@ -169,10 +316,13 @@ class DrawingScene extends Phaser.Scene {
         const strokeThickness = this.isMobile ? 6 : 6;  // Same thick stroke for both
         const letterYOffset = this.isMobile ? -100 : -100;  // Moved much higher to ensure full letter visibility
         
+        // Use consistent Arial font for all letter types
+        const fontFamily = 'Arial';
+        
         // Letter outline (black stroke, no fill) - RESPONSIVE TEXT with adjusted origin
         this.letterText = this.add.text(width/2, height/2 + letterYOffset, this.currentLetter.letter, {
             fontSize: letterSize,
-            fontFamily: 'Arial',
+            fontFamily: fontFamily,
             stroke: '#000000',
             strokeThickness: strokeThickness,
             fill: 'transparent',  // No fill color
@@ -355,25 +505,81 @@ class DrawingScene extends Phaser.Scene {
             'ஓ': 'oo.mp3',
             'ஔ': 'au.mp3',
             
-            // Consonants
-            'க்': 'ka.mp3',
-            'ங்': 'nga.mp3',
-            'ச்': 'cha.mp3',
-            'ஞ்': 'nya.mp3',
-            'ட்': 'ta.mp3',
-            'ண்': 'na.mp3',
-            'த்': 'tha.mp3',
-            'ந்': 'nha.mp3',
-            'ப்': 'pa.mp3',
-            'ம்': 'ma.mp3',
-            'ய்': 'ya.mp3',
-            'ர்': 'ra.mp3',
-            'ல்': 'la.mp3',
-            'வ்': 'va.mp3',
-            'ழ்': 'zha.mp3',
-            'ள்': 'lla.mp3',
-            'ற்': 'rra.mp3',
-            'ன்': 'nna.mp3'
+            // Uyir Mei (18 Tamil Consonants)
+            'க': 'ka.mp3',
+            'ங': 'nga.mp3',
+            'ச': 'cha.mp3',
+            'ஞ': 'nya.mp3',
+            'ட': 'ta.mp3',
+            'ண': 'na.mp3',
+            'த': 'tha.mp3',
+            'ந': 'nha.mp3',
+            'ப': 'pa.mp3',
+            'ம': 'ma.mp3',
+            'ய': 'ya.mp3',
+            'ர': 'ra.mp3',
+            'ல': 'la.mp3',
+            'வ': 'va.mp3',
+            'ழ': 'zha.mp3',
+            'ள': 'lla.mp3',
+            'ற': 'rra.mp3',
+            'ன': 'nna.mp3',
+            
+            // English Capital Letters
+            'A': 'A.mp3',
+            'B': 'B.mp3',
+            'C': 'C.mp3',
+            'D': 'D.mp3',
+            'E': 'E.mp3',
+            'F': 'F.mp3',
+            'G': 'G.mp3',
+            'H': 'H.mp3',
+            'I': 'I.mp3',
+            'J': 'J.mp3',
+            'K': 'K.mp3',
+            'L': 'L.mp3',
+            'M': 'M.mp3',
+            'N': 'N.mp3',
+            'O': 'O.mp3',
+            'P': 'P.mp3',
+            'Q': 'Q.mp3',
+            'R': 'R.mp3',
+            'S': 'S.mp3',
+            'T': 'T.mp3',
+            'U': 'U.mp3',
+            'V': 'V.mp3',
+            'W': 'W.mp3',
+            'X': 'X.mp3',
+            'Y': 'Y.mp3',
+            'Z': 'Z.mp3',
+            
+            // English Small Letters
+            'a': 'a-small.mp3',
+            'b': 'b-small.mp3',
+            'c': 'c-small.mp3',
+            'd': 'd-small.mp3',
+            'e': 'e-small.mp3',
+            'f': 'f-small.mp3',
+            'g': 'g-small.mp3',
+            'h': 'h-small.mp3',
+            'i': 'i-small.mp3',
+            'j': 'j-small.mp3',
+            'k': 'k-small.mp3',
+            'l': 'l-small.mp3',
+            'm': 'm-small.mp3',
+            'n': 'n-small.mp3',
+            'o': 'o-small.mp3',
+            'p': 'p-small.mp3',
+            'q': 'q-small.mp3',
+            'r': 'r-small.mp3',
+            's': 's-small.mp3',
+            't': 't-small.mp3',
+            'u': 'u-small.mp3',
+            'v': 'v-small.mp3',
+            'w': 'w-small.mp3',
+            'x': 'x-small.mp3',
+            'y': 'y-small.mp3',
+            'z': 'z-small.mp3'
         };
         
         return letterToFile[tamilLetter] || 'default.mp3';
@@ -483,7 +689,7 @@ class DrawingScene extends Phaser.Scene {
                 this.drawDottedCurve(centerX - 30, centerY + 10, centerX, centerY + 30, centerX + 30, centerY + 10);
                 break;
                 
-            case 'க்': // 'k' - consonant with horizontal and vertical elements
+            case 'க': // 'k' - consonant with horizontal and vertical elements
                 // Top horizontal stroke guide (inside the stroke)
                 this.drawDottedLine(centerX - 50, centerY - 50, centerX + 50, centerY - 50);
                 // Left vertical stroke guide
@@ -492,7 +698,7 @@ class DrawingScene extends Phaser.Scene {
                 this.drawDottedLine(centerX + 20, centerY - 30, centerX + 35, centerY - 15);
                 break;
                 
-            case 'ங்': // 'ng' - curved consonant
+            case 'ங': // 'ng' - curved consonant
                 // Main curved guide
                 this.drawDottedCurve(centerX - 40, centerY - 30, centerX, centerY + 20, centerX + 40, centerY - 30);
                 // Central vertical guide
@@ -606,7 +812,7 @@ class DrawingScene extends Phaser.Scene {
             if (this.isDrawing) {
                 console.log('✏️ Finished drawing');
                 this.isDrawing = false;
-                this.evaluateDrawing();
+                this.enableNextButton();
             }
         });
     }
@@ -647,301 +853,17 @@ class DrawingScene extends Phaser.Scene {
         });
     }
     
-    evaluateDrawing() {
-        // Calculate score out of 100
-        const score = this.calculateScore();
-        
-        console.log(`📊 Letter tracing score: ${score}/100`);
-        
-        // Show score
-        this.showScore(score);
-        
-        // Handle different score ranges
-        if (score < 50) {
-            // Below 50 - Ask to try again
-            this.handleLowScore(score);
-        } else if (score >= 90) {
-            // Above 90 - Big celebration
-            this.handleExcellentScore(score);
-        } else if (score >= 75) {
-            // Above 75 - Reward animation
-            this.handleGoodScore(score);
-        } else {
-            // 50-74 - Basic positive feedback
-            this.handleOkayScore(score);
-        }
-    }
     
-    calculateScore() {
-        // Basic scoring algorithm based on drawing coverage and bounds checking
-        let score = 0;
-        
-        // Base score for drawing inside bounds
-        if (this.drawingPoints.length > 0) {
-            score += 30; // Base points for attempting
-        }
-        
-        // Coverage score based on number of drawing points
-        const minPoints = 10;  // Minimum expected points
-        const maxPoints = 100; // Good coverage points
-        const coverageScore = Math.min(70, (this.drawingPoints.length / maxPoints) * 70);
-        score += coverageScore;
-        
-        // Bonus for staying within bounds (all points were inside)
-        const allPointsInside = this.drawingPoints.every(point => 
-            this.isInsideLetterBounds(point.x, point.y)
-        );
-        
-        if (allPointsInside && this.drawingPoints.length > minPoints) {
-            score += 20; // Bonus for good tracing
-        }
-        
-        // Randomize slightly for variety (±5 points)
-        score += Math.random() * 10 - 5;
-        
-        return Math.round(Math.max(0, Math.min(100, score)));
-    }
     
-    showScore(score) {
-        // Remove previous score
-        if (this.scoreText) {
-            this.scoreText.destroy();
-        }
-        
-        // Color based on score
-        let color = '#f44336'; // Red for low scores
-        if (score >= 90) color = '#4caf50'; // Green for excellent
-        else if (score >= 75) color = '#8bc34a'; // Light green for good
-        else if (score >= 50) color = '#ff9800'; // Orange for okay
-        
-        this.scoreText = this.add.text(this.sys.game.config.width/2, 200, `Score: ${score}/100`, {
-            fontSize: '36px',
-            fill: color,
-            fontFamily: 'Arial',
-            fontStyle: 'bold',
-            stroke: '#ffffff',
-            strokeThickness: 2
-        }).setOrigin(0.5);
-        
-        // Score animation
-        this.scoreText.setScale(0);
-        this.tweens.add({
-            targets: this.scoreText,
-            scaleX: 1.2,
-            scaleY: 1.2,
-            duration: 300,
-            ease: 'Back.easeOut',
-            yoyo: true,
-            repeat: 1
-        });
-    }
     
-    handleLowScore(score) {
-        // Below 50 - Ask to try again
-        this.showFeedback('Try again! Trace more of the letter carefully.', '#f44336');
-        
-        // Shake animation for the letter
-        this.tweens.add({
-            targets: this.letterText,
-            x: this.letterText.x - 10,
-            duration: 100,
-            yoyo: true,
-            repeat: 3,
-            ease: 'Power2'
-        });
-        
-        // Don't enable next button - user must try again
-        console.log('❌ Score too low, user must retry');
-    }
     
-    handleOkayScore(score) {
-        // 50-74 - Basic positive feedback
-        const messages = [
-            'Good job! Keep practicing!',
-            'Nice work! Getting better!',
-            'Well done! You can do even better!',
-            'Good tracing! Try for a higher score next time!'
-        ];
-        
-        const message = messages[Math.floor(Math.random() * messages.length)];
-        this.showFeedback(message, '#ff9800');
-        
-        // Enable next button
-        this.enableNextButton();
-    }
     
-    handleGoodScore(score) {
-        // 75-89 - Reward animation
-        this.showFeedback('Excellent work! Great tracing! ⭐', '#8bc34a');
-        
-        // Star particle effect
-        this.createStarParticles();
-        
-        // Letter glow effect
-        this.tweens.add({
-            targets: this.letterText,
-            scaleX: 1.1,
-            scaleY: 1.1,
-            duration: 500,
-            yoyo: true,
-            repeat: 1,
-            ease: 'Power2'
-        });
-        
-        // Enable next button with glow
-        this.enableNextButton();
-        
-        console.log('⭐ Good score - reward animation played');
-    }
     
-    handleExcellentScore(score) {
-        // 90+ - Big celebration
-        this.showFeedback('AMAZING! Perfect tracing! 🎉🏆', '#4caf50');
-        
-        // Multiple celebration effects
-        this.createFireworksEffect();
-        this.createFloatingStars();
-        this.createRainbowGlow();
-        
-        // Letter celebration animation
-        this.tweens.add({
-            targets: this.letterText,
-            scaleX: 1.3,
-            scaleY: 1.3,
-            duration: 600,
-            yoyo: true,
-            repeat: 2,
-            ease: 'Bounce.easeOut'
-        });
-        
-        // Enable next button with special effect
-        this.enableNextButton();
-        
-        console.log('🎉 Excellent score - big celebration!');
-    }
     
-    createStarParticles() {
-        const { width, height } = this.sys.game.config;
-        
-        for (let i = 0; i < 8; i++) {
-            const star = this.add.text(
-                width/2 + (Math.random() - 0.5) * 200,
-                height/2 + (Math.random() - 0.5) * 200,
-                '⭐', {
-                    fontSize: '24px'
-                }
-            );
-            
-            this.tweens.add({
-                targets: star,
-                y: star.y - 100,
-                alpha: 0,
-                scaleX: 2,
-                scaleY: 2,
-                duration: 1500,
-                ease: 'Power2',
-                onComplete: () => star.destroy()
-            });
-        }
-    }
     
-    createFireworksEffect() {
-        const { width, height } = this.sys.game.config;
-        
-        // Multiple firework bursts
-        for (let burst = 0; burst < 3; burst++) {
-            this.time.delayedCall(burst * 300, () => {
-                for (let i = 0; i < 12; i++) {
-                    const angle = (i / 12) * Math.PI * 2;
-                    const distance = 100 + Math.random() * 50;
-                    
-                    const particle = this.add.text(width/2, height/2 - 50, '✨', {
-                        fontSize: '20px'
-                    });
-                    
-                    this.tweens.add({
-                        targets: particle,
-                        x: width/2 + Math.cos(angle) * distance,
-                        y: height/2 - 50 + Math.sin(angle) * distance,
-                        alpha: 0,
-                        scaleX: 0.5,
-                        scaleY: 0.5,
-                        duration: 1000,
-                        ease: 'Power2',
-                        onComplete: () => particle.destroy()
-                    });
-                }
-            });
-        }
-    }
     
-    createFloatingStars() {
-        const { width, height } = this.sys.game.config;
-        
-        for (let i = 0; i < 15; i++) {
-            const star = this.add.text(
-                Math.random() * width,
-                height + 50,
-                '🌟', {
-                    fontSize: '30px'
-                }
-            );
-            
-            this.tweens.add({
-                targets: star,
-                y: -50,
-                x: star.x + (Math.random() - 0.5) * 100,
-                duration: 3000 + Math.random() * 1000,
-                ease: 'Linear',
-                onComplete: () => star.destroy()
-            });
-        }
-    }
     
-    createRainbowGlow() {
-        // Rainbow color cycling effect on the letter
-        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
-        let colorIndex = 0;
-        
-        const colorCycle = this.time.addEvent({
-            delay: 200,
-            callback: () => {
-                if (this.letterText && colorIndex < colors.length * 2) {
-                    this.letterText.setStroke(colors[colorIndex % colors.length], 6);
-                    colorIndex++;
-                } else {
-                    // Reset to black
-                    if (this.letterText) {
-                        this.letterText.setStroke('#000000', 6);
-                    }
-                    colorCycle.remove();
-                }
-            },
-            repeat: colors.length * 2 - 1
-        });
-    }
     
-    showFeedback(message, color = '#4caf50') {
-        // Remove previous feedback
-        if (this.feedbackText) {
-            this.feedbackText.destroy();
-        }
-        
-        this.feedbackText = this.add.text(this.sys.game.config.width/2, 180, message, {
-            fontSize: '28px',
-            fill: color,
-            fontFamily: 'Arial',
-            fontStyle: 'bold'
-        }).setOrigin(0.5);
-        
-        // Auto-hide after 2 seconds
-        this.time.delayedCall(2000, () => {
-            if (this.feedbackText) {
-                this.feedbackText.destroy();
-                this.feedbackText = null;
-            }
-        });
-    }
     
     enableNextButton() {
         if (this.nextButton && this.nextButtonText) {
@@ -961,16 +883,6 @@ class DrawingScene extends Phaser.Scene {
                 this.nextButton.clear().fillStyle(0x00d4aa).fillRoundedRect(width/2 - nextButtonWidth/2, buttonY - buttonHeight/2, nextButtonWidth, buttonHeight, 15);
             });
             
-            // Add glow effect to indicate it's ready
-            this.tweens.add({
-                targets: this.nextButton,
-                scaleX: 1.05,
-                scaleY: 1.05,
-                duration: 500,
-                yoyo: true,
-                repeat: 2,
-                ease: 'Power2'
-            });
         }
     }
     
@@ -1043,20 +955,10 @@ class DrawingScene extends Phaser.Scene {
             this.nextButton.setVisible(false);
             this.nextButtonText.setVisible(false);
             
-            // Clear feedback
-            if (this.feedbackText) {
-                this.feedbackText.destroy();
-                this.feedbackText = null;
-            }
+            // Clear warning
             if (this.warningText) {
                 this.warningText.destroy();
                 this.warningText = null;
-            }
-            
-            // Clear score display
-            if (this.scoreText) {
-                this.scoreText.destroy();
-                this.scoreText = null;
             }
         });
         
@@ -1088,7 +990,7 @@ class DrawingScene extends Phaser.Scene {
         } else {
             // Go to next letter
             console.log(`📝 Moving to letter ${nextIndex + 1}: ${this.tamilLetters[nextIndex].letter}`);
-            this.scene.restart({ letterIndex: nextIndex });
+            this.scene.restart({ letterIndex: nextIndex, letterType: this.letterType });
         }
     }
     
@@ -1109,14 +1011,26 @@ class DrawingScene extends Phaser.Scene {
             fontStyle: 'bold'
         }).setOrigin(0.5);
         
-        this.add.text(width/2, height/2 - 40, 'You completed all Tamil letters!', {
+        let completionText = 'You completed all letters!';
+        if (this.letterType === 'uyir') completionText = 'You completed all Tamil vowels!';
+        else if (this.letterType === 'uyirMei') completionText = 'You completed all Tamil letters!';
+        else if (this.letterType === 'englishCapital') completionText = 'You completed all capital letters!';
+        else if (this.letterType === 'englishSmall') completionText = 'You completed all small letters!';
+        
+        this.add.text(width/2, height/2 - 40, completionText, {
             fontSize: '28px',
             fill: '#ffeb3b',
             fontFamily: 'Arial'
         }).setOrigin(0.5);
         
-        // Show some completed letters
-        this.add.text(width/2, height/2 + 20, 'அ ஆ இ ஈ உ ஊ எ ஏ ஐ ஒ ஓ ஔ', {
+        // Show some completed letters based on type
+        let sampleLetters = 'அ ஆ இ ஈ உ ஊ எ ஏ ஐ ஒ ஓ ஔ';
+        if (this.letterType === 'uyir') sampleLetters = 'அ ஆ இ ஈ உ ஊ எ ஏ ஐ ஒ ஓ ஔ';
+        else if (this.letterType === 'uyirMei') sampleLetters = 'க ங ச ஞ ட ண த ந ப ம ய ர';
+        else if (this.letterType === 'englishCapital') sampleLetters = 'A B C D E F G H I J K L';
+        else if (this.letterType === 'englishSmall') sampleLetters = 'a b c d e f g h i j k l';
+        
+        this.add.text(width/2, height/2 + 20, sampleLetters, {
             fontSize: '36px',
             fill: '#ffffff',
             fontFamily: 'Arial'
@@ -1145,6 +1059,7 @@ class DrawingScene extends Phaser.Scene {
         
         // Store current state
         const currentLetterIndex = this.currentLetterIndex;
+        const letterType = this.letterType;
         const drawingPoints = this.drawingPoints ? [...this.drawingPoints] : [];
         const isEvaluating = this.isEvaluating;
         
@@ -1153,6 +1068,7 @@ class DrawingScene extends Phaser.Scene {
         
         // Reinitialize with current state
         this.currentLetterIndex = currentLetterIndex;
+        this.letterType = letterType;
         this.drawingPoints = drawingPoints;
         this.isEvaluating = isEvaluating;
         
